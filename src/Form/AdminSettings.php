@@ -131,34 +131,6 @@ class AdminSettings extends ConfigFormBase {
       '#description' => $this->t('This can speed up page rendering time by limiting the number of external requests.'),
     ];
 
-    $ad_categories_bundles = $config->get('ad_categories_bundles');
-    $form['global_tag_settings']['enable_ad_categories'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enable DFP Ad Categories'),
-      '#default_value' => !empty($ad_categories_bundles),
-      '#description' => $this->t('Example: if you have an "animals" vocabulary and you want to target the same ads to "dogs", "cats" and "hamsters" you can edit each of those terms and set the DFP Ad Category to "pets". Whenever the taxonomy terms are included as targeting values, anything tagged "cats" will target "pets" instead.'),
-    ];
-
-    $bundles = $this->bundleInfo->getBundleInfo('taxonomy_term');
-    $options = [];
-    foreach ($bundles as $key => $bundle) {
-      if ($key != 'dfp_ad_categories') {
-        $options[$key] = (string) $bundle['label'];
-      }
-    }
-    // @todo react to bundle
-    $form['global_tag_settings']['ad_categories_bundles'] = [
-      '#type' => 'checkboxes',
-      '#options' => $options,
-      '#default_value' => $ad_categories_bundles,
-      '#title' => $this->t('Select the vocabularies on which DFP Ad Categories should be enabled.'),
-      '#states' => [
-        'visible' => [
-          'input[name="enable_ad_categories"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
     // Global display options.
     $form['global_display_options'] = [
       '#type' => 'details',
@@ -238,38 +210,9 @@ class AdminSettings extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    if (!$values['enable_ad_categories']) {
-      $values['ad_categories_bundles'] = [];
-    }
     if (!$values['async_rendering']) {
       $values['disable_init_load'] = FALSE;
     }
-
-    // @todo Add fields to selected vocabularies.
-    // Attach (or delete) an instance of the dfp_ad_categories term_reference
-    // field for each vocabulary that should (or should not) have DFP Ad
-    // Categories enabled.
-    //    foreach ($form_state['values']['dfp_enable_ad_categories_bundles'] as $bundle => $enable) {
-    //      $existing_instance = field_read_instance('taxonomy_term', 'field_dfp_ad_categories', $bundle);
-    //      $enable = $enable && !$existing_instance && $form_state['values']['dfp_enable_ad_categories'];
-    //      if ($enable) {
-    //        $instance = array(
-    //          'field_name' => 'field_dfp_ad_categories',
-    //          'entity_type' => 'taxonomy_term',
-    //          'label' => t('DFP Ad Category'),
-    //          'bundle' => $bundle,
-    //          'required' => FALSE,
-    //          'widget' => array(
-    //            'type' => 'options_select'
-    //          ),
-    //        );
-    //        field_create_instance($instance);
-    //      }
-    //      elseif (!$enable && $existing_instance) {
-    //        // Delete this field instance, but be certain not to delete the field.
-    //        field_delete_instance($existing_instance, FALSE);
-    //      }
-    //    }
 
     $this->config('dfp.settings')
       ->set('network_id', $values['network_id'])
@@ -278,7 +221,6 @@ class AdminSettings extends ConfigFormBase {
       ->set('async_rendering', $values['async_rendering'])
       ->set('disable_init_load', $values['disable_init_load'])
       ->set('single_request', $values['single_request'])
-      ->set('ad_categories_bundles', $values['ad_categories_bundles'])
       ->set('default_slug', $values['default_slug'])
       ->set('collapse_empty_divs', $values['collapse_empty_divs'])
       ->set('adtest_adunit_pattern', $values['adtest_adunit_pattern'])

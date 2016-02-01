@@ -22,8 +22,6 @@ dfp.settings:
     single_request:
       type: boolean
       label: 'Use a single request'
-    ad_categories_bundles:
-      type: ignore
     default_slug:
       type: string
       label: 'The default slug'

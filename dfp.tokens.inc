@@ -25,10 +25,6 @@ function dfp_token_info() {
     'name' => t("Network ID"),
     'description' => t("The unique ID provided by Google."),
   ];
-  $tag['ad_categories'] = [
-    'name' => t("DFP Ad Categories"),
-    'description' => t("The DFP Ad Categories or uncategorized taxonomy terms attached to the entities currently being displayed to the user."),
-  ];
 
   return [
     'types' => ['dfp_tag' => $type],
@@ -55,12 +51,6 @@ function dfp_tokens($type, $tokens, array $data, array $options, BubbleableMetad
           $config = \Drupal::config('dfp.settings');
           $replacements[$original] = $config->get('network_id');
           $bubbleable_metadata->addCacheableDependency($config);
-          break;
-
-        case 'ad_categories':
-          // @todo What to do here?
-          $term_names = &drupal_static('dfp_entity_targeting_terms', []);
-          $replacements[$original] = implode(',', $term_names);
           break;
       }
     }

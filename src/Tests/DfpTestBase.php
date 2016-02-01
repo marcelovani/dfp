@@ -41,11 +41,8 @@ abstract class DfpTestBase extends WebTestBase {
     // Create an admin user with all the permissions needed to run tests.
     $this->adminUser = $this->drupalCreateUser([
       'administer DFP',
-      'administer taxonomy',
       'access administration pages',
       'administer blocks',
-      'bypass node access',
-      'administer nodes',
     ]);
     $this->drupalLogin($this->adminUser);
 

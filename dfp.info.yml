@@ -6,5 +6,3 @@ package: Advertising
 configure: dfp.admin_settings
 dependencies:
   - block
-  - taxonomy
-#  - entity_modified

@@ -4,7 +4,6 @@ click_url: ''
 async_rendering: true
 disable_init_load: false
 single_request: true
-ad_categories_bundles: []
 default_slug: ''
 collapse_empty_divs: 1
 hide_slug: true
