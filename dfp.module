@@ -24,6 +24,7 @@ function dfp_permission() {
     'administer DFP' => array(
       'title' => t('Administer Doubleclick for Publisher ads'),
       'description' => t('Users can create, edit, and delete Doubleclick for Publishers (dfp) ad tags and configure how and when they should be displayed.'),
+      'restrict access' => TRUE,
     ),
   );
 }
