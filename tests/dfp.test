@@ -150,6 +150,16 @@ class dfpDisplayTagTest extends dfpBaseTest {
     $edit = array('machinename' => drupal_strtolower($this->randomName(64)));
     $tag = $this->createTag($edit);
     $this->assertRaw('googletag.defineSlot("' . variable_get('dfp_network_id', '') . '/' . $tag->adunit . '", ' . dfp_format_size($tag->size) . ', "' . $tag->placeholder_id . '")', 'The ad slot with a very long machine name has been correctly defined in javascript.');
+
+    // Ensure the DPF click url is safe.
+    variable_set('dfp_click_url', 'javascript://example.com?foo&bar');
+    $this->drupalGet('/');
+    $this->assertNoRaw('javascript://example.com');
+    $this->assertRaw('.setClickUrl("http://drupal7.dev/javascript%3A//example.com%3Ffoo%26bar")', 'Click URL is filtered for bad protocols and absolute.');
+
+    variable_set('dfp_click_url', 'http://example.com?foo&bar');
+    $this->drupalGet('/');
+    $this->assertRaw('.setClickUrl("http://example.com?foo&bar")', 'Valid external Click URL is not mangled.');
   }
 
   function testDisplayTagWithMapping() {

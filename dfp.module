@@ -762,11 +762,7 @@ function _dfp_js_slot_definition($tag) {
   }
   $click_url = variable_get('dfp_click_url', '');
   if (!empty($click_url)) {
-    if (!preg_match("/^https?:\/\//", $click_url)) {
-      // relative URL; prepend site domain
-      $click_url = (($GLOBALS['is_https']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . "/" . $click_url;
-    }
-    $js .= '  .setClickUrl("' . $click_url . '")' . "\n";
+    $js .= '  .setClickUrl("' . url($click_url, array('absolute' => TRUE)) . '")' . "\n";
   }
   $js .= '  .addService(googletag.pubads())' . "\n";
 
