@@ -408,7 +408,7 @@ function dfp_tag($machinename) {
             ),
           ),
           'slug' => array(
-            '#markup' => $tag->slug,
+            '#markup' => check_plain($tag->slug),
           ),
           '#weight' => -1,
         );
@@ -613,7 +613,7 @@ function dfp_format_size($size) {
  *
  */
 function dfp_format_slug($slug) {
-  $formatted_slug = t(check_plain(variable_get('dfp_default_slug', '')));
+  $formatted_slug = variable_get('dfp_default_slug', '');
 
   if ($slug == '<none>') {
     $formatted_slug = "";
@@ -957,7 +957,7 @@ function template_preprocess_dfp_tag(&$variables) {
         ),
       ),
       'slug' => array(
-        '#markup' => $tag->slug,
+        '#markup' => check_plain($tag->slug),
       ),
       '#weight' => -1,
     );

@@ -199,10 +199,10 @@ class dfpDisplayTagTest extends dfpBaseTest {
 
     // Create a tag without a slug, display it and ensure the default slug is
     // displayed.
-    variable_set('dfp_default_slug', $this->randomName(8));
+    variable_set('dfp_default_slug', '<p>Global slug</p>');
     $edit['settings[slug]'] = '';
     $tag = $this->createTag($edit);
-    $this->assertRaw('<div class="slug">' . dfp_format_slug(variable_get('dfp_default_slug', '')) . '</div>', 'The default slug is correctly used when no slug exists for an individual tag.');
+    $this->assertRaw('<div class="slug">' . check_plain(variable_get('dfp_default_slug', '')) . '</div>', 'The default slug is correctly used when no slug exists for an individual tag.');
 
     // Change the slug to <none> and ensure that no slug is displayed.
     $edit['settings[slug]'] = '<none>';
@@ -210,10 +210,10 @@ class dfpDisplayTagTest extends dfpBaseTest {
     $this->assertNoRaw('<div class="slug">', t('No slug is appearing when "@none" is used.', array('@none' => '<none>')));
 
     // Specify a slug and check that it shows instead of the default slug.
-    $slug = $this->randomName(8);
+    $slug = '<p>Custom slug</p>';
     $edit['settings[slug]'] = $slug;
     $this->editTag($tag->machinename, $edit);
-    $this->assertRaw('<div class="slug">' . $slug . '</div>', 'The provided slug is correctly displayed with its tag.');
+    $this->assertRaw('<div class="slug">' . check_plain($slug) . '</div>', 'The provided slug is correctly displayed with its tag.');
   }
 
   function testTargeting() {
