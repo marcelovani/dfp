@@ -150,6 +150,16 @@ class dfpDisplayTagTest extends dfpBaseTest {
     $edit = array('machinename' => drupal_strtolower($this->randomName(64)));
     $tag = $this->createTag($edit);
     $this->assertRaw('googletag.defineSlot("' . variable_get('dfp_network_id', '') . '/' . $tag->adunit . '", ' . dfp_format_size($tag->size) . ', "' . $tag->placeholder_id . '")', 'The ad slot with a very long machine name has been correctly defined in javascript.');
+
+    // Ensure the DPF click url is safe.
+    variable_set('dfp_click_url', 'javascript://example.com?foo&bar');
+    $this->drupalGet('/');
+    $this->assertNoRaw('javascript://example.com');
+    $this->assertRaw('.setClickUrl("http://drupal7.dev/javascript%3A//example.com%3Ffoo%26bar")', 'Click URL is filtered for bad protocols and absolute.');
+
+    variable_set('dfp_click_url', 'http://example.com?foo&bar');
+    $this->drupalGet('/');
+    $this->assertRaw('.setClickUrl("http://example.com?foo&bar")', 'Valid external Click URL is not mangled.');
   }
 
   function testDisplayTagWithMapping() {
@@ -189,10 +199,10 @@ class dfpDisplayTagTest extends dfpBaseTest {
 
     // Create a tag without a slug, display it and ensure the default slug is
     // displayed.
-    variable_set('dfp_default_slug', $this->randomName(8));
+    variable_set('dfp_default_slug', '<p>Global slug</p>');
     $edit['settings[slug]'] = '';
     $tag = $this->createTag($edit);
-    $this->assertRaw('<div class="slug">' . dfp_format_slug(variable_get('dfp_default_slug', '')) . '</div>', 'The default slug is correctly used when no slug exists for an individual tag.');
+    $this->assertRaw('<div class="slug">' . check_plain(variable_get('dfp_default_slug', '')) . '</div>', 'The default slug is correctly used when no slug exists for an individual tag.');
 
     // Change the slug to <none> and ensure that no slug is displayed.
     $edit['settings[slug]'] = '<none>';
@@ -200,10 +210,10 @@ class dfpDisplayTagTest extends dfpBaseTest {
     $this->assertNoRaw('<div class="slug">', t('No slug is appearing when "@none" is used.', array('@none' => '<none>')));
 
     // Specify a slug and check that it shows instead of the default slug.
-    $slug = $this->randomName(8);
+    $slug = '<p>Custom slug</p>';
     $edit['settings[slug]'] = $slug;
     $this->editTag($tag->machinename, $edit);
-    $this->assertRaw('<div class="slug">' . $slug . '</div>', 'The provided slug is correctly displayed with its tag.');
+    $this->assertRaw('<div class="slug">' . check_plain($slug) . '</div>', 'The provided slug is correctly displayed with its tag.');
   }
 
   function testTargeting() {
@@ -510,6 +520,11 @@ class dfpAdTestTest extends dfpBaseTest {
     variable_set('dfp_adtest_adunit', $override);
     $this->drupalGet('admin/structure/dfp_ads/test_page', array('query' => array('adtest' => 'true')));
     $this->assertRaw('googletag.defineSlot("' . variable_get('dfp_network_id', '') . '/' . $override . '"', 'The Ad Unit Name was properly overridden using the adtest query string.');
+
+    // Check that nefarious overrride values are caught because security.
+    $nefarious_override = "<script>alert('not safe');</script>";
+    $this->drupalGet('admin/structure/dfp_ads/test_page', array('query' => array('adunit_override' => $nefarious_override)));
+    $this->assertNoRaw($nefarious_override, 'Only strings without executable code can be used for the adunit_override query string.');
   }
 
 }
