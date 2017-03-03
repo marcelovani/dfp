@@ -554,14 +554,14 @@ function dfp_format_targeting($targeting, $tag = '') {
     $target['target'] = '"' . check_plain($target['target']) . '"';
     $target['value'] = dfp_token_replace(check_plain($target['value']), $tag, array('sanitize' => TRUE, 'clear' => TRUE));
 
+    // Allow other modules to alter the target.
+    drupal_alter('dfp_target', $target);
+
     // The target value could be blank if tokens are used. If so, removed it.
     if (empty($target['value'])) {
       unset($targeting[$key]);
       continue;
     }
-
-    // Allow other modules to alter the target.
-    drupal_alter('dfp_target', $target);
 
     // Convert the values into an array and trim the whitespace from each value.
     $values = explode(',', $target['value']);
@@ -753,7 +753,10 @@ function _dfp_js_slot_definition($tag) {
     $breakpoints = $tag->breakpoints;
     $js .= 'var mapping = googletag.sizeMapping()' . "\n";
     foreach ($breakpoints as $breakpoint) {
-      $js .= '  .addSize(' . dfp_format_size($breakpoint['browser_size']) . ', ' . dfp_format_size($breakpoint['ad_sizes']) . ')' . "\n";
+      // If the ad sizes string contains the special keyword "<none>," use an
+      // empty size list in order to suppress slot display.
+      $ad_sizes = strpos($breakpoint['ad_sizes'], '<none>') !== FALSE ? '' : $breakpoint['ad_sizes'];
+      $js .= '  .addSize(' . dfp_format_size($breakpoint['browser_size']) . ', ' . dfp_format_size($ad_sizes) . ')' . "\n";
     }
     $js .= '  .build();' . "\n";
   }
