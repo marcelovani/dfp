@@ -156,6 +156,13 @@ function dfp_admin_settings($form, $form_state) {
       ),
     ),
   );
+  $form['global_display_options']['dfp_set_centering'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Set DFP Ad Centering'),
+    '#default_value' => variable_get('dfp_set_centering', 0),
+    '#description' => t('Enables/disables centering of ads. This mode must be set before the service is enabled. Centering is disabled by default. In legacy gpt_mobile.js, centering is enabled by default.'),
+  );
+
 
   // Global targeting options.
   $form['targeting_settings'] = array(

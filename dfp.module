@@ -709,6 +709,9 @@ function _dfp_js_global_settings() {
   if (variable_get('dfp_disable_init_load', 0)) {
     $js .= '  googletag.pubads().disableInitialLoad();' . "\n";
   }
+  if (variable_get('dfp_set_centering', 0)) {
+    $js .= '  googletag.pubads().setCentering(true);' . "\n";
+  }
 
   // Set global targeting values for this page.
   $targeting = variable_get('dfp_targeting', array());

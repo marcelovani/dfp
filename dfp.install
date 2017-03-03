@@ -130,6 +130,14 @@ function dfp_install() {
 }
 
 /**
+ * Implements hook_uninstall().
+ */
+function dfp_uninstall() {
+  // Delete variables.
+  variable_del('dfp_set_centering');
+}
+
+/**
  * Migrate existing DART tags to DFP tags. Note: this migration will destroy
  * the any DFP global settings that have already been set.
  */
