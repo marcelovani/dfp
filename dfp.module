@@ -24,6 +24,7 @@ function dfp_permission() {
     'administer DFP' => array(
       'title' => t('Administer Doubleclick for Publisher ads'),
       'description' => t('Users can create, edit, and delete Doubleclick for Publishers (dfp) ad tags and configure how and when they should be displayed.'),
+      'restrict access' => TRUE,
     ),
   );
 }
@@ -407,7 +408,7 @@ function dfp_tag($machinename) {
             ),
           ),
           'slug' => array(
-            '#markup' => $tag->slug,
+            '#markup' => check_plain($tag->slug),
           ),
           '#weight' => -1,
         );
@@ -612,7 +613,7 @@ function dfp_format_size($size) {
  *
  */
 function dfp_format_slug($slug) {
-  $formatted_slug = t(check_plain(variable_get('dfp_default_slug', '')));
+  $formatted_slug = variable_get('dfp_default_slug', '');
 
   if ($slug == '<none>') {
     $formatted_slug = "";
@@ -799,7 +800,7 @@ function _dfp_js_slot_definition($tag) {
       // relative URL; prepend site domain
       $click_url = (($GLOBALS['is_https']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . "/" . $click_url;
     }
-    $js .= '.setClickUrl("' . $click_url . '")';
+    $js .= '.setClickUrl("' . url($click_url, array('absolute' => TRUE)) . '")' . "\n";
   }
 
   // Set ad type if explicitly defined.
@@ -1010,7 +1011,7 @@ function template_preprocess_dfp_tag(&$variables) {
         ),
       ),
       'slug' => array(
-        '#markup' => $tag->slug,
+        '#markup' => check_plain($tag->slug),
       ),
       '#weight' => -1,
     );
