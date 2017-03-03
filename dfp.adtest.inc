@@ -77,7 +77,17 @@ function dfp_adtest_form($form, &$form_state) {
 function dfp_adtest_alter_tag(&$tag) {
   // Check for a submit on adtest form.
   if (isset($_GET['adunit_override'])) {
-    $tag->adunit = $_GET['adunit_override'];
+    // For security reasons, ensure that adunit_override contains only letters,
+    // numbers, hyphens, dashes, periods, hard brackets and colons. Typically
+    // only a site builder or an ad ops person will be using the adtest page so
+    // if there is a problem with the adunit override value we can safely
+    // display a somewhat technical message.
+    if (!preg_match('@[^a-zA-Z0-9\-_\.\[\]\:]+@', $_GET['adunit_override'])) {
+      $tag->adunit = $_GET['adunit_override'];
+    }
+    else {
+      drupal_set_message(t('The adunit_override query string can only contain letters, numbers, hyphens, dashes, periods, hard brackets and colons. Please doublecheck the override string you were provided.'), 'error');
+    }
   }
 
   // Check for an "adtest" query string variable.
