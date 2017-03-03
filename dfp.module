@@ -662,6 +662,7 @@ function _dfp_get_ad_category($term, $clean_string = FALSE) {
  * slot definitions.
  */
 function _dfp_js_global_settings() {
+  /*
   // Initialize the google varibales and inject user-defined javascript.
   $js = 'var googletag = googletag || {};' . "\n";
   $js .= 'googletag.cmd = googletag.cmd || [];';
@@ -678,17 +679,80 @@ function _dfp_js_global_settings() {
     'force header' => TRUE,
   );
   drupal_add_js($js, $options);
+  */
+  $googletag = array(
+    'var googletag = googletag || {};',
+    'googletag.cmd = googletag.cmd || [];',
+    'googletag.slots = googletag.slots || {};'
+  );
+
+  if (variable_get('dfp_async_rendering', 1)) {
+    $googleScript = array(
+      '(function() {',
+        'var gads = document.createElement("script");',
+        'gads.async = true;',
+        'gads.type = "text/javascript";',
+        'var useSSL = "https:" == document.location.protocol;',
+        'gads.src = (useSSL ? "https:" : "http:") + "//www.googletagservices.com/tag/js/gpt.js";',
+        'var node = document.getElementsByTagName("script")[0];',
+        'node.parentNode.insertBefore(gads, node);',
+      '})();'
+    );
+
+    $element = array(
+      '#tag' => 'script',
+      '#weight' => 1000,
+      '#value' => implode($googletag, ' ') . "\n" . implode($googleScript, ' '),
+      '#attributes' => array(
+        'type' => 'text/javascript',
+      ),
+    );
+
+    drupal_add_html_head($element, 'dfp_googletag_head');
+
+  } else {
+
+    $element = array(
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#value' => '',
+      '#attributes' => array(
+         'src' => 'http://www.googletagservices.com/tag/js/gpt.js',
+      ),
+      '#suffix' => '</script>'
+    );
+
+    drupal_add_html_head($element, 'dfp_googletag_script_head');
+
+    $element = array(
+      '#tag' => 'script',
+      '#weight' => 1000,
+      '#value' => implode($googletag, ' '),
+      '#attributes' => array(
+        'type' => 'text/javascript'
+      ),
+    );
+
+    drupal_add_html_head($element, 'dfp_googletag_vars_head');
+  }
 
   // Inlclude a script tag for the Google Tag Services.
   // @todo: One day this should include an async=true attribute. See #1140356.
   //        However, there is a good chance this might break <= IE8.
+  /*
   $options['type'] = 'external';
   $options['weight']++;
   drupal_add_js(($GLOBALS['is_https'] ? "https://" : "http://") . DFP_GOOGLE_TAG_SERVICES_URL, $options);
+  */
 
   // Add global settings with a heavy weight so that they appear after all the
   // defineSlot() calls otherwise IE8 and Opera fail to display ads properly.
-  $js = 'googletag.cmd.push(function() {' . "\n";
+
+  $js = '';
+  // As per Sync rendering docs, all options apart from enableServices should be wrapped in cmd.push
+  //https://support.google.com/dfp_premium/answer/1638622?hl=en#sync
+  $js .= 'googletag.cmd.push(function() {' . "\n";
+
   if (variable_get('dfp_async_rendering', 1)) {
     $js .= '  googletag.pubads().enableAsyncRendering();' . "\n";
   }
@@ -720,18 +784,39 @@ function _dfp_js_global_settings() {
     }
   }
 
-  $js .= '});' . "\n";
   $js .= variable_get('dfp_injected_js2', '') . "\n";
+
+  // Closing googletag.cmd.push for sync rendering
+  if (!variable_get('dfp_async_rendering', 1)) {
+    $js .= '});' . "\n";
+  }
+
   $js .= 'googletag.enableServices();';
 
-  $options = array(
-    'type' => 'inline',
-    'group' => JS_DEFAULT,
-    'every_page' => TRUE,
-    'weight' => 10,
-    'force header' => TRUE,
-  );
-  drupal_add_js($js, $options);
+  // Closing googletag.cmd.push for async rendering
+  if (variable_get('dfp_async_rendering', 1)) {
+    $js .= '});' . "\n";
+
+    $options = array(
+      'type' => 'inline',
+      'group' => JS_DEFAULT,
+      'every_page' => TRUE,
+      'weight' => 10,
+      'force header' => TRUE,
+    );
+    drupal_add_js($js, $options);
+  } else {
+    $element = array(
+      '#tag' => 'script',
+      '#weight' => 100000,
+      '#value' => $js,
+      '#attributes' => array(
+        'type' => 'text/javascript'
+      ),
+    );
+
+    drupal_add_html_head($element, 'dfp_googletag_test');
+  }
 }
 
 /**
@@ -741,6 +826,10 @@ function _dfp_js_global_settings() {
 function _dfp_js_slot_definition($tag) {
   // Add the js needed to define this adSlot to <head>.
   $js = '';
+
+  if (variable_get('dfp_async_rendering', 1)) {
+    $js = 'googletag.cmd.push(function() {';
+  }
   // Start by defining breakpoints for this ad.
   if (!empty($tag->breakpoints)) {
     $breakpoints = $tag->breakpoints;
@@ -787,6 +876,11 @@ function _dfp_js_slot_definition($tag) {
   if (!empty($tag->breakpoints)) {
     $js .= '  .defineSizeMapping(mapping)' . "\n";
   }
+  // Closing googletag.cmd.push
+  if (variable_get('dfp_async_rendering', 1)) {
+    $js .= ' })';
+  }
+
   $js = rtrim($js, "\n") . ';';
 
   $options = array(
@@ -794,6 +888,7 @@ function _dfp_js_slot_definition($tag) {
     'group' => JS_LIBRARY,
     'weight' => 0,
   );
+
   drupal_add_js($js, $options);
 }
 
