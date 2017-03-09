@@ -155,7 +155,8 @@ class dfpDisplayTagTest extends dfpBaseTest {
     variable_set('dfp_click_url', 'javascript://example.com?foo&bar');
     $this->drupalGet('/');
     $this->assertNoRaw('javascript://example.com');
-    $this->assertRaw('.setClickUrl("http://drupal7.dev/javascript%3A//example.com%3Ffoo%26bar")', 'Click URL is filtered for bad protocols and absolute.');
+    $pattern = "|\.setClickUrl\(\"http(.*):\/\/(.*)\/javascript%3A\/\/example\.com%3Ffoo%26bar\"\)|";
+    $this->assertPattern($pattern, 'Click URL is filtered for bad protocols and absolute.');
 
     variable_set('dfp_click_url', 'http://example.com?foo&bar');
     $this->drupalGet('/');
