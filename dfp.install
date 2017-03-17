@@ -156,6 +156,8 @@ function dfp_install() {
 function dfp_uninstall() {
   // Delete variables.
   variable_del('dfp_set_centering');
+  variable_del('dfp_token_cache_enabled');
+  variable_del('dfp_token_cache_lifetime');
 }
 
 /**
