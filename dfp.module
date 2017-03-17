@@ -862,8 +862,6 @@ function _dfp_prepare_adunit($tag) {
  * @see token_replace()
  */
 function dfp_token_replace($text, $tag = NULL, array $options = array()) {
-  $processed_strings =& drupal_static(__FUNCTION__, NULL);
-
   // Short-circuit the degenerate case, just like token_replace() does.
   $text_tokens = token_scan($text);
   if (empty($text_tokens)) {
@@ -874,6 +872,30 @@ function dfp_token_replace($text, $tag = NULL, array $options = array()) {
   // @todo This doesn't vary, so we could probably refactor it to be cached,
   // too.
   $data = _dfp_prepare_tokens($tag);
+
+  // Tokens cache.
+  $dfp_token_cache_enabled = variable_get('dfp_token_cache_enabled', TRUE);
+  if ($dfp_token_cache_enabled && function_exists('entity_modified_last')) {
+    $replacement = _dfp_token_replace_cache($text, $data, $options);
+  }
+  else {
+    $replacement = token_replace($text, $data, $options);
+  }
+
+  return $replacement;
+}
+
+/**
+ * Helper to store and retrieve tokens from cache.
+ *
+ * @param       $text
+ * @param null  $tag
+ * @param array $options
+ *
+ * @return mixed
+ */
+function _dfp_token_replace_cache($text, $data, array $options = array()) {
+  $processed_strings =& drupal_static(__FUNCTION__, NULL);
 
   // Determine the cache key for this text string. That way we can cache
   // reliably.

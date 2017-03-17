@@ -93,6 +93,27 @@ function dfp_schema() {
 }
 
 /**
+ * Implements hook_requirements().
+ */
+function dfp_requirements($phase) {
+  $requirements = array();
+  if ($phase == 'runtime') {
+    if (variable_get('dfp_token_cache_enabled', 0)) {
+      if (!function_exists('entity_modified_last')) {
+        $requirements['dfp_token_cache'] = array(
+          'title' => t('DFP dependency'),
+          'value' => t('DFP token cache requires Entity Modified module.'),
+          'description' => t('Please install <a href="@module">Entity Modified</a> module or disable the option.', array('@module' => 'https://www.drupal.org/project/entity_modified')),
+          'severity' => REQUIREMENT_ERROR,
+        );
+      }
+    }
+  }
+
+  return $requirements;
+}
+
+/**
  * Implements hook_install().
  */
 function dfp_install() {
