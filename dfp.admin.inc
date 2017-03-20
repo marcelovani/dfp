@@ -122,6 +122,7 @@ function dfp_admin_settings($form, $form_state) {
   $form['global_tag_settings']['dfp_token_cache_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t("Enable DFP Token cache"),
+    '#disabled' => !module_exists('entity_modified'),
     '#default_value' => variable_get("dfp_token_cache_enabled", TRUE),
     '#description' => t('DFP custom cache for token replacements. Requires Entity Modified module.'),
   );
@@ -137,7 +138,6 @@ function dfp_admin_settings($form, $form_state) {
       ),
     ),
   );
-
 
   // Global display options.
   $form['global_display_options'] = array(
@@ -245,20 +245,19 @@ function dfp_admin_settings($form, $form_state) {
 /**
  * Submit handler for the global DFP settings form.
  */
-function dfp_admin_form_validate($element, &$form_state)
-{
+function dfp_admin_form_validate($element, &$form_state) {
   $settings = $element['global_tag_settings'];
   if (!empty($settings['dfp_click_url']['#value']) && $settings['dfp_async_rendering']['#value'] == 1) {
     form_error($settings['dfp_click_url'], t('Setting a click URL does not work with async rendering.'));
   }
 
   // Only allow DFP token cache if Entity modified is enabled.
-  if (($settings['dfp_token_cache_enabled']['#value']) == TRUE) {
-    if (!function_exists('entity_modified_last')) {
-      form_error($settings['dfp_token_cache_enabled'],
-        t('DFP token cache requires Entity Modified module.')
-      );
-    }
+  if ($settings['dfp_token_cache_enabled']['#value'] == TRUE &&
+    !function_exists('entity_modified_last')
+  ) {
+    form_error($settings['dfp_token_cache_enabled'],
+      t('DFP token cache requires Entity Modified module.')
+    );
   }
 }
 
