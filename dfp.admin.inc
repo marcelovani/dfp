@@ -123,7 +123,7 @@ function dfp_admin_settings($form, $form_state) {
     '#type' => 'checkbox',
     '#title' => t("Enable DFP Token cache"),
     '#disabled' => !module_exists('entity_modified'),
-    '#default_value' => variable_get("dfp_token_cache_enabled", TRUE),
+    '#default_value' => (module_exists('entity_modified')) ? variable_get("dfp_token_cache_enabled", TRUE) : FALSE,
     '#description' => t('DFP custom cache for token replacements. Requires Entity Modified module.'),
   );
   $form['global_tag_settings']['dfp_token_cache_lifetime'] = array(
