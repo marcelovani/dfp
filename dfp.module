@@ -682,7 +682,7 @@ function _dfp_js_global_settings() {
   //        However, there is a good chance this might break <= IE8.
   $options['type'] = 'external';
   $options['weight']++;
-  drupal_add_js(($GLOBALS['is_https'] ? "https://" : "http://") . DFP_GOOGLE_TAG_SERVICES_URL, $options);
+  drupal_add_js("//" . DFP_GOOGLE_TAG_SERVICES_URL, $options);
 
   // Add global settings with a heavy weight so that they appear after all the
   // defineSlot() calls otherwise IE8 and Opera fail to display ads properly.
