@@ -11,7 +11,7 @@ class dfpBaseTest extends DrupalWebTestCase {
    */
   function setUp() {
     // Enable a couple modules.
-    parent::setUp('ctools', 'dfp', 'taxonomy');
+    parent::setUp('ctools', 'dfp', 'taxonomy', 'entity_modified');
     menu_rebuild();
 
     // Create an admin user with all the permissions needed to run tests.

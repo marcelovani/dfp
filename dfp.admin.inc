@@ -119,13 +119,25 @@ function dfp_admin_settings($form, $form_state) {
       ),
     ),
   );
+  $form['global_tag_settings']['dfp_token_cache_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t("Enable DFP Token cache"),
+    '#disabled' => !module_exists('entity_modified'),
+    '#default_value' => (module_exists('entity_modified')) ? variable_get("dfp_token_cache_enabled", TRUE) : FALSE,
+    '#description' => t('DFP custom cache for token replacements. Requires Entity Modified module.'),
+  );
   $form['global_tag_settings']['dfp_token_cache_lifetime'] = array(
     '#type' => 'textfield',
     '#title' => t("Token cache lifetime"),
+    '#size' => 6,
     '#default_value' => variable_get("dfp_token_cache_lifetime", 0),
     '#description' => t('The time, in seconds, that the DFP token cache will be valid for. The token cache will always be cleared at the next system cron run after this time period, or when this form is saved.'),
+    '#states' => array(
+      'visible' => array(
+        'input[name="dfp_token_cache_enabled"]' => array('checked' => TRUE),
+      ),
+    ),
   );
-
 
   // Global display options.
   $form['global_display_options'] = array(
@@ -169,7 +181,6 @@ function dfp_admin_settings($form, $form_state) {
     '#default_value' => variable_get('dfp_set_centering', 0),
     '#description' => t('Enables/disables centering of ads. This mode must be set before the service is enabled. Centering is disabled by default. In legacy gpt_mobile.js, centering is enabled by default.'),
   );
-
 
   // Global targeting options.
   $form['targeting_settings'] = array(
@@ -234,11 +245,19 @@ function dfp_admin_settings($form, $form_state) {
 /**
  * Submit handler for the global DFP settings form.
  */
-function dfp_admin_form_validate($element, &$form_state)
-{
+function dfp_admin_form_validate($element, &$form_state) {
   $settings = $element['global_tag_settings'];
   if (!empty($settings['dfp_click_url']['#value']) && $settings['dfp_async_rendering']['#value'] == 1) {
     form_error($settings['dfp_click_url'], t('Setting a click URL does not work with async rendering.'));
+  }
+
+  // Only allow DFP token cache if Entity modified is enabled.
+  if ($settings['dfp_token_cache_enabled']['#value'] == TRUE &&
+    !function_exists('entity_modified_last')
+  ) {
+    form_error($settings['dfp_token_cache_enabled'],
+      t('DFP token cache requires Entity Modified module.')
+    );
   }
 }
 
