@@ -12,7 +12,7 @@ class dfpAdCategoriesTest extends dfpBaseTest {
   public static function getInfo() {
     return array(
       'name' => t('DFP Ad Categories'),
-      'description' => t('Tests the functionaility of DFP ad categories.'),
+      'description' => t('Tests the functionality of DFP ad categories.'),
       'group' => t('DFP'),
     );
   }
@@ -37,7 +37,7 @@ class dfpAdCategoriesTest extends dfpBaseTest {
     $this->assertNoFieldByName('field_dfp_ad_categories[und]');
 
     // Check that disabling DFP Ad Categories on a specific vocabulary works.
-    // For this test to be valid, we first need to reenable DFP Ad Categories.
+    // For this test to be valid, we first need to re-enable DFP Ad Categories.
     $edit = array(
       'dfp_enable_ad_categories' => 1,
       'dfp_enable_ad_categories_bundles[tags]' => 'tags',
@@ -52,7 +52,7 @@ class dfpAdCategoriesTest extends dfpBaseTest {
     $this->assertNoFieldByName('field_dfp_ad_categories[und]');
   }
 
-  // Test that DFP Catetories are displayed properly.
+  // Test that DFP Categories are displayed properly.
   function testDisplayAdCategories() {
     $dfp_add_categories_vocabulary = taxonomy_vocabulary_machine_name_load('dfp_ad_categories');
     $tags_vocabulary = taxonomy_vocabulary_machine_name_load('tags');
@@ -102,7 +102,7 @@ class dfpAdCategoriesTest extends dfpBaseTest {
     $this->drupalGet('taxonomy/term/' . $dfp_category->tid);
     $this->assertPropertySet('Targeting', 'categories', $dfp_category->name);
 
-    // Check that when we are on a term page for a term with a coresponding
+    // Check that when we are on a term page for a term with a corresponding
     // DFP Ad Categories the DFP Ad Category is included.
     $this->drupalGet('taxonomy/term/' . $test_tag->tid);
     $this->assertPropertySet('Targeting', 'categories', $dfp_category->name);

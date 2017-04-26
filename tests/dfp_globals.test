@@ -11,7 +11,7 @@ class dfpGlobalsTest extends dfpBaseTest {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Gloabl DFP Tag Settings'),
+      'name' => t('Global DFP Tag Settings'),
       'description' => t('Tests for the settings defined in admin/structure/dfp_ads/settings.'),
       'group' => t('DFP'),
     );
@@ -34,7 +34,7 @@ class dfpGlobalsTest extends dfpBaseTest {
     $this->assertRaw('googletag.pubads().enableSingleRequest();', 'Single request is turned on.');
     $this->assertRaw('googletag.pubads().collapseEmptyDivs();', 'Collapse empty divs is turned on.');
     $this->assertRaw($injected_js, 'Injected javascript correctly appears on the page.');
-    $this->assertRaw('googletag.pubads().setTargeting("' . $target['target'] . '", "' . $target['value'] . '");', 'Global targetting values appear correclty in javascript.');
+    $this->assertRaw('googletag.pubads().setTargeting("' . $target['target'] . '", "' . $target['value'] . '");', 'Global targeting values appear correctly in javascript.');
   }
 
   function testGlobalSettingsOff() {
