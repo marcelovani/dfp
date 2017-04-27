@@ -32,6 +32,24 @@ class DFPUnitTest extends DrupalUnitTestCase {
     $sizes = '300x250';
     $expected_result = '[300, 250]';
 
+    // Test a singe size.
+    $this->assertTrue(dfp_format_size($sizes) == $expected_result, 'The dfp_format_sizes function correctly handles an single size.');
+
+    // Test fluid size single.
+    $sizes = 'fluid';
+    $expected_result = "'fluid'";
+    $this->assertTrue(dfp_format_size($sizes) == $expected_result, 'The dfp_format_sizes function correctly handles an single googletag.namedSize size.');
+
+    // Test multiple sizes.
+    $sizes = '300x250,728x90';
+    $expected_result = '[[300, 250], [728, 90]]';
+    $this->assertTrue(dfp_format_size($sizes) == $expected_result, 'The dfp_format_sizes function correctly handles multiple sizes.');
+
+    // Test multisize with fluid.
+    $sizes = '300x250,fluid';
+    $expected_result = "[[300, 250], 'fluid']";
+    $this->assertTrue(dfp_format_size($sizes) == $expected_result, 'The dfp_format_sizes function correctly handles an multiplesizes with fluid googletag.namedSize tag.');
+
     $this->assertTrue(dfp_format_size($sizes) == $expected_result, 'The dfp_format_sizes function correctly handles an single size.');
     $sizes = '300x250,728x90';
     $expected_result = '[[300, 250], [728, 90]]';

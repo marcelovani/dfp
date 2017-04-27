@@ -582,19 +582,26 @@ function dfp_format_targeting($targeting, $tag = '') {
  * Format the the size of an ad tag.
  *
  * @param array $variables
- *   'size' => A string in the format 123x321,987x789.
+ *   'size' => A string in the format 123x321,987x789,fluid.
  *
  * @return string
- *   A string in the format [456, 654] or [[123, 321], [987, 789]].
+ *   A string in the format [456, 654], 'fluid' or
+ *   [[123, 321], [987, 789], 'fluid'].
  *
+ * @see https://developers.google.com/doubleclick-gpt/reference?rd=1#type-definitions
  */
 function dfp_format_size($size) {
   $formatted_sizes = array();
 
   $sizes = explode(',', check_plain($size));
   foreach ($sizes as $size) {
-    $formatted_size = explode('x', trim($size));
-    $formatted_sizes[] = '[' . implode(', ', $formatted_size) . ']';
+    if ($size === 'fluid') {
+      $formatted_sizes[] = "'$size'";
+    }
+    else {
+      $formatted_size = explode('x', trim($size));
+      $formatted_sizes[] = '[' . implode(', ', $formatted_size) . ']';
+    }
   }
 
   return count($formatted_sizes) == 1 ? $formatted_sizes[0] : '[' . implode(', ', $formatted_sizes) . ']';

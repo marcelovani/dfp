@@ -100,7 +100,7 @@ function dfp_tag_form(&$form, &$form_state) {
   $form['tag_settings']['size'] = array(
     '#type' => 'textfield',
     '#title' => t('Size(s)'),
-    '#description' => t('Example: 300x600,300x250. For Out Of Page slots, use 0x0'),
+    '#description' => t('Example: 300x600,300x250,fluid. For Out Of Page slots, use 0x0'),
     '#required' => TRUE,
     '#maxlength' => 64,
     '#default_value' => $tag->size,
