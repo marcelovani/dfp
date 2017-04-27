@@ -16,6 +16,12 @@ dependencies[] = taxonomy
 
 files[] = plugins/export_ui/dfp_tag_ui.class.inc
 files[] = plugins/export_ui/dfp_ctools_export_ui.inc
-files[] = tests/dfp.test
+files[] = tests/dfp_ad_categories.test
+files[] = tests/dfp_ads.test
+files[] = tests/dfp_base.test
+files[] = tests/dfp_display_tag.test
+files[] = tests/dfp_globals.test
+files[] = tests/dfp_tokens.test
+files[] = tests/dfp_unit.test
 
 testing_api = 2.x
