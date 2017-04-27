@@ -9,9 +9,9 @@
   <?php if (isset($slug)):
     print drupal_render($slug);
   endif; ?>
-  <script type="text/javascript">
-    googletag.cmd.push(function() {
-      googletag.display("<?php print $tag->placeholder_id ?>");
-    });
+  <?php if (isset($display_call)):?>
+    <script type="text/javascript">
+      <?php print ($display_call);?>
   </script>
+  <?php endif; ?>
 </div>
