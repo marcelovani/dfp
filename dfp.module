@@ -156,6 +156,7 @@ function dfp_block_view($delta) {
   $tag = dfp_tag_load($delta);
 
   if (empty($tag->disabled)) {
+    $block['title'] = NULL;
     $block['content'] = dfp_tag($delta);
     $block['content']['#contextual_links'] = array(
       'dfp' => array('admin/structure/dfp_ads/list', array($delta, 'edit'))
