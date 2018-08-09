@@ -62,10 +62,6 @@ trait BreakpointFormTrait {
           if (empty($val[$k]['browser_size']) && empty($val[$k]['ad_sizes'])) {
             unset($val[$k]);
           }
-          // Set as empty if no ads should be displayed.
-          if (isset($val[$k]['ad_sizes']) && $val[$k]['ad_sizes'] == '<none>') {
-            $val[$k]['ad_sizes'] = '';
-          }
         }
         // Reset the array indexes to prevent wierd behavior caused by a
         // breakpoint being removed in the middle of the array.
