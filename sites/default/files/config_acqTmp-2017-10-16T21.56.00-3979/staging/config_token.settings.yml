@@ -1,0 +1,11 @@
+allowed_tokens:
+  example_email:
+    name: 'Example email'
+    description: 'This is an example of custom token'
+    format: plain_text
+  example_phone:
+    name: 'Example phone'
+    description: 'This is another example of custom token'
+    format: plain_text
+_core:
+  default_config_hash: 6JDo80nmfek6ofPdHA7D1zkpRIcOsXVSHrM4UERP0cg
