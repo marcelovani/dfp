@@ -68,7 +68,7 @@ class dfpDisplayTagTest extends dfpBaseTest {
     $edit['breakpoints[0][browser_size]'] = $this->dfpGenerateSize();
     $edit['breakpoints[0][ad_sizes]'] = $this->randomName(8);
     $this->editTag($tag->machinename, $edit);
-    $this->assertText(t('The ad size(s) can only contain numbers, the character x and commas.'), 'An error was correctly thrown when invalid characters.');
+    $this->assertText(t('The ad size(s) string can only contain numbers, the character x and commas (unless it is the special keyword "!none").', array('!none' => htmlspecialchars('<none>'))), 'An error was correctly thrown when the Ad Size(s) field contained an invalid pattern.');
   }
 
   function testSlug() {
