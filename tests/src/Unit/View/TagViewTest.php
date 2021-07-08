@@ -32,6 +32,7 @@ class TagViewTest extends UnitTestCase {
    */
   public function formatSizeProvider() {
     return [
+      ['<none>', '[]'],
       ['300x250 ', '[300, 250]'],
       ['300x250, 728x90 ', '[[300, 250], [728, 90]]'],
     ];

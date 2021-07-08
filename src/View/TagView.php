@@ -329,8 +329,15 @@ class TagView {
 
     $sizes = explode(',', $size);
     foreach ($sizes as $size) {
-      $formatted_size = explode('x', trim($size));
-      $formatted_sizes[] = '[' . implode(', ', $formatted_size) . ']';
+      if ($size == '<none>') {
+        // If the ad sizes string contains the special keyword "<none>," use an
+        // empty size list in order to suppress slot display.
+        $formatted_sizes[] = '[]';
+      }
+      else {
+        $formatted_size = explode('x', trim($size));
+        $formatted_sizes[] = '[' . implode(', ', $formatted_size) . ']';
+      }
     }
 
     return count($formatted_sizes) == 1 ? $formatted_sizes[0] : '[' . implode(', ', $formatted_sizes) . ']';

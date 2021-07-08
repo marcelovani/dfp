@@ -22,14 +22,22 @@ trait BreakpointFormTrait {
       $form_state->setError($element['browser_size'], t('The browser size cannot be empty if ad size(s) exists.'));
     }
     elseif (!empty($element['browser_size']['#value']) && empty($element['ad_sizes']['#value'])) {
-      $form_state->setError($element['ad_sizes'], t('The ad size(s) cannot be empty if a browser size exists.'));
+      $form_state->setError($element['ad_sizes'], t(
+          'The ad size(s) cannot be empty if a browser size exists. If you wish to suppress an ad slot for a given browser size, you can enter "@none" in the ad size(s) field.',
+          array('@none' => '<none>')
+        )
+      );
     }
     if (!empty($element['browser_size']['#value']) && !empty($element['ad_sizes']['#value'])) {
       if (preg_match('/[^x|0-9]/', $element['browser_size']['#value'])) {
         $form_state->setError($element['browser_size'], t('The browser size can only contain numbers and the character x.'));
       }
-      elseif (preg_match('/[^x|,|0-9]/', $element['ad_sizes']['#value'])) {
-        $form_state->setError($element['ad_sizes'], t('The ad size(s) can only contain numbers, the character x and commas.'));
+      elseif ($element['ad_sizes']['#value'] != '<none>' && preg_match('/[^x|,|0-9]/', $element['ad_sizes']['#value'])) {
+        $form_state->setError($element['ad_sizes'], t(
+            'The ad size(s) string can only contain numbers, the character x and commas (unless it is the special keyword "@none").',
+            array('@none' => '<none>')
+          )
+        );
       }
     }
   }
@@ -158,7 +166,10 @@ trait BreakpointFormTrait {
     ];
     if (empty($data)) {
       $form['breakpoints']['table'][$key]['browser_size']['#description'] = $this->t('Example: 1024x768');
-      $form['breakpoints']['table'][$key]['ad_sizes']['#description'] = $this->t('Example: 300x600,300x250');
+      $form['breakpoints']['table'][$key]['ad_sizes']['#description'] = $this->t(
+        'Example: 300x600, 300x250. Enter "@none" to suppress this slot for a given browser size.',
+        array('@none' => '<none>')
+      );
     }
   }
 
